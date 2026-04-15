@@ -52,7 +52,7 @@ def index():
     city = request.args.get('city', type=str)
     category = request.args.get('category', type=int)
     goods = db_sess.query(Goods).filter(
-        Goods.is_active is True
+        Goods.is_active == True
     )
     if category:
         goods = goods.filter(Goods.category_id == category)
@@ -254,7 +254,7 @@ def disable_good(good_id):
 def show_good(good_id):
     db_sess = db_session.create_session()
     good = db_sess.query(Goods).filter(
-        Goods.id == good_id, Goods.is_active is True
+        Goods.id == good_id, Goods.is_active == True
     ).first()
     if not good:
         return redirect("/")
@@ -270,7 +270,7 @@ def show_good(good_id):
 def open_chat(good_id):
     db_sess = db_session.create_session()
     good = db_sess.query(Goods).filter(
-        Goods.id == good_id, Goods.is_active is True
+        Goods.id == good_id, Goods.is_active == True
     ).first()
     if not good:
         return redirect("/")
