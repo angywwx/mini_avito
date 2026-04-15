@@ -15,39 +15,6 @@
 - список всех чатов пользователя
 - отображение непрочитанных сообщений
 
-## Стек
-
-- Python
-- Flask
-- Flask-Login
-- SQLAlchemy
-- WTForms / Flask-WTF
-- SQLite
-- Bootstrap
-
-## Структура проекта
-```bash
-web5/
-├── data/
-│ ├── __init__.py
-│ ├── db_session.py
-│ ├── forms.py
-│ └── models.py
-├── db/
-│ └── avito.db
-├── static/
-│ └── img/
-├── templates/
-│ ├── base.html
-│ ├── index.html
-│ ├── login.html
-│ ├── profile.html
-│ ├── good_detail.html
-│ ├── chats.html
-│ └── ...
-├── main.py
-└── requirements.txt
-```
 ## Установка и запуск
 ### 1. Клонировать репозиторий
 ``` 
@@ -70,7 +37,7 @@ tuna config save-token <your_token>
 python main.py
 tuna http 5000
 ``` 
-## Основные сущности
+## Классы
 
 ### User
 Пользователь системы:
@@ -128,6 +95,7 @@ tuna http 5000
 
 - по городу
 - по категории
+- 
 ## Чаты
 
 Для каждого товара можно открыть чат между продавцом и покупателем.
