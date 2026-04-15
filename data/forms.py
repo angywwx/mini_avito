@@ -1,9 +1,11 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import EmailField, PasswordField, BooleanField, SubmitField, StringField, SelectField
+from wtforms import (BooleanField, EmailField, PasswordField, SelectField,
+                     StringField, SubmitField)
 from wtforms.fields.numeric import IntegerField
 from wtforms.fields.simple import TextAreaField
-from wtforms.validators import DataRequired, EqualTo, Email, Length, NumberRange
+from wtforms.validators import (DataRequired, Email, EqualTo, Length,
+                                NumberRange)
 
 
 class LoginForm(FlaskForm):
@@ -19,7 +21,9 @@ class RegisterForm(FlaskForm):
     phone = StringField('Номер телефона', validators=[Length(min=10, max=11)])
     city = StringField('Город', validators=[Length(max=100)])
     email = EmailField('Почта', validators=[DataRequired(), Email()])
-    password = PasswordField('Пароль', validators=[DataRequired(), Length(min=8)])
+    password = PasswordField(
+        'Пароль', validators=[DataRequired(), Length(min=8)]
+    )
     password_again = PasswordField(
         'Введите пароль',
         validators=[
@@ -34,7 +38,9 @@ class CreateGoodForm(FlaskForm):
     title = StringField('Название', validators=[Length(min=1, max=100)])
     description = StringField('Описание', validators=[Length(min=1, max=100)])
     image_fn = FileField('Прикрепить картинку')
-    price = IntegerField('Стоимость', validators=[NumberRange(min=1, max=10**6)])
+    price = IntegerField(
+        'Стоимость', validators=[NumberRange(min=1, max=10**6)]
+    )
     category_id = SelectField('Категория', coerce=int)
     submit = SubmitField('Готово')
 
@@ -50,5 +56,7 @@ class EditProfileForm(FlaskForm):
 
 
 class MessageForm(FlaskForm):
-    text = TextAreaField('Сообщение', validators=[DataRequired(), Length(min=1, max=2000)])
+    text = TextAreaField(
+        'Сообщение', validators=[DataRequired(), Length(min=1, max=2000)]
+    )
     submit = SubmitField('Отправить')

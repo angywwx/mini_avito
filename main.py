@@ -1,11 +1,15 @@
 import random
+
+from flask import (Flask, jsonify, make_response, redirect, render_template,
+                   request)
+from flask_login import (LoginManager, current_user, login_required,
+                         login_user, logout_user)
 from sqlalchemy import or_
 
-from flask import Flask, render_template, redirect, make_response, jsonify, request
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from data.forms import (CreateGoodForm, EditProfileForm, LoginForm,
+                        MessageForm, RegisterForm)
+from data.models import Category, Chats, Goods, Messages, User
 from db import db_session
-from data.models import User, Goods, Category, Chats, Messages
-from data.forms import LoginForm, RegisterForm, CreateGoodForm, EditProfileForm, MessageForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -34,22 +38,33 @@ def index():
     db_sess = db_session.create_session()
     check = db_sess.query(Category).count()
     if check == 0:
-        for i in ['Одежда', 'Обувь', 'Электроника', "Книги", "Для дома", "Спорт"]:
+        for i in [
+            'Одежда',
+            'Обувь',
+            'Электроника',
+            "Книги",
+            "Для дома",
+            "Спорт"
+        ]:
             good = Category(category=i)
             db_sess.add(good)
             db_sess.commit()
     city = request.args.get('city', type=str)
     category = request.args.get('category', type=int)
     goods = db_sess.query(Goods).filter(
-        Goods.is_active == True
+        Goods.is_active is True
     )
     if category:
         goods = goods.filter(Goods.category_id == category)
     if city:
         goods = goods.filter(Goods.city == city)
     goods = goods.order_by(Goods.created_at.desc()).all()
-    categories = db_sess.query(Category).order_by(Category.category.asc()).all()
-    cities = db_sess.query(Goods.city).distinct().order_by(Goods.city.asc()).all()
+    categories = db_sess.query(Category).order_by(
+        Category.category.asc()
+    ).all()
+    cities = db_sess.query(Goods.city).distinct().order_by(
+        Goods.city.asc()
+    ).all()
     sp = [city[0] for city in cities]
     return render_template(
         "index.html",
@@ -65,7 +80,9 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        user = db_sess.query(User).filter(
+            User.email == form.email.data
+        ).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
@@ -80,7 +97,9 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        user = db_sess.query(User).filter(
+            User.email == form.email.data
+        ).first()
         if not user:
             new_user = User(
                 name=form.name.data,
@@ -93,9 +112,12 @@ def register():
             db_sess.add(new_user)
             db_sess.commit()
             return redirect("/login")
-        return render_template('base_form.html',
-                               message="Пользователь с таким email уже существует",
-                               form=form, title='Регистрация')
+        return render_template(
+            'base_form.html',
+            message="Пользователь с таким email уже существует",
+            form=form,
+            title='Регистрация'
+        )
     return render_template('base_form.html', title='Регистрация', form=form)
 
 
@@ -126,7 +148,8 @@ def create_good():
         print(form.image_fn.data)
         if form.image_fn.data:
             img = form.image_fn.data
-            filename = f'{form.title.data}_{form.price.data}_{current_user.id}_{random.randint(1, 1000)}.jpg'
+            filename = (f'{form.title.data}_{form.price.data}_'
+                        f'{current_user.id}_{random.randint(1, 1000)}.jpg')
             img.save(f"static/img/{filename}")
 
         good = Goods(
@@ -154,7 +177,9 @@ def create_good():
 def edit_profile():
     form = EditProfileForm()
     db_sess = db_session.create_session()
-    edit_user = db_sess.query(User).filter(User.email == current_user.email).first()
+    edit_user = db_sess.query(User).filter(
+        User.email == current_user.email
+    ).first()
     if form.validate_on_submit():
         edit_user.name = form.name.data
         edit_user.surname = form.surname.data
@@ -171,7 +196,11 @@ def edit_profile():
         form.address.data = edit_user.address
         form.email.data = edit_user.email
         form.phone.data = edit_user.phone
-    return render_template("base_form.html", title='Редактировать профиль', form=form)
+    return render_template(
+        "base_form.html",
+        title='Редактировать профиль',
+        form=form
+    )
 
 
 @app.route('/goods_edit/<int:good_id>', methods=['GET', 'POST'])
@@ -191,7 +220,8 @@ def edit_good(good_id):
         good.category_id = form.category_id.data
         if form.image_fn.data:
             img = form.image_fn.data
-            filename = f'{form.title.data}_{form.price.data}_{current_user.id}_{random.randint(1, 1000)}.jpg'
+            filename = (f'{form.title.data}_{form.price.data}_'
+                        f'{current_user.id}_{random.randint(1, 1000)}.jpg')
             img.save(f"static/img/{filename}")
             good.image_fn = filename
         db_sess.commit()
@@ -201,7 +231,12 @@ def edit_good(good_id):
         form.description.data = good.description
         form.price.data = good.price
         form.category_id.data = good.category_id
-    return render_template("base_form.html", title='Редактировать товар', form=form)
+    return render_template(
+        "base_form.html",
+        title='Редактировать товар',
+        form=form
+    )
+
 
 @app.route('/goods_disable/<int:good_id>', methods=['GET', 'POST'])
 @login_required
@@ -214,20 +249,29 @@ def disable_good(good_id):
     db_sess.commit()
     return redirect("/profile")
 
+
 @app.route('/goods/<int:good_id>')
 def show_good(good_id):
     db_sess = db_session.create_session()
-    good = db_sess.query(Goods).filter(Goods.id == good_id, Goods.is_active == True).first()
+    good = db_sess.query(Goods).filter(
+        Goods.id == good_id, Goods.is_active is True
+    ).first()
     if not good:
         return redirect("/")
-    return render_template("goods_profile.html", title='Карточка товара', good=good)
+    return render_template(
+        "goods_profile.html",
+        title='Карточка товара',
+        good=good
+    )
 
 
 @app.route('/goods/<int:good_id>/chat')
 @login_required
 def open_chat(good_id):
     db_sess = db_session.create_session()
-    good = db_sess.query(Goods).filter(Goods.id == good_id, Goods.is_active == True).first()
+    good = db_sess.query(Goods).filter(
+        Goods.id == good_id, Goods.is_active is True
+    ).first()
     if not good:
         return redirect("/")
     if good.user_id == current_user.id:
