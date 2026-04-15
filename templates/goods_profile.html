@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Описание товара</h1>
+  </div>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-6">
+          {% if good.image_fn %}
+              <img src="{{ url_for('static', filename='img/' + good.image_fn) }}"
+                   class="card-img-top"
+                   alt="Фото товара"
+                   style="width: 100%; height: 400px; object-fit: contain;"
+              >
+            {% endif %}
+      </div>
+        <div class="col-md-6">
+            <h1>{{good.title}}</h1>
+            <p class="fs-4 text-primary">{{good.price}}</p>
+            <p>Категория: {{good.category.category}}</p>
+            <p>Город: {{good.user.city}}</p>
+            <p>Дата публикации: {{ good.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+            <hr>
+            <h4>Описание</h4>
+            <p>{{good.description}}</p>
+            <hr>
+            <h4>Продавец</h4>
+            <p>Имя: {{good.user.name}}</p>
+            <p>Фамилия: {{good.user.surname}}</p>
+            <p>Город: {{good.user.city}}</p>
+            <p>Адрес: {{good.user.address or "Не указано"}}</p>
+            {% if current_user.is_authenticated and current_user.id != good.user_id %}
+                <a href="/goods/{{ good.id }}/chat" class="btn btn-primary">Написать продавцу</a>
+            {% endif %}
+        </div>
+    </div>
+  </div>
+{% endblock %}

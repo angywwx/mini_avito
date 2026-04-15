@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-3">Мои чаты</h1>
+    {% if chats %}
+        <div class="list-group">
+        {% for chat in chats %}
+            <a href="/chat/{{chat.id}}" class="list-group-item list-group-item-action mb-2 rounded">
+                <div class="row align-items-center" >
+                    <div class="col-md-2">
+                    {% if chat.good.image_fn %}
+                      <img src="{{ url_for('static', filename='img/' + chat.good.image_fn) }}"
+                           class="img-fluid rounded"
+                           alt="{{chat.good.title}}"
+                           style="width: 100%; height: 100px; object-fit: contain;"
+                      >
+                    {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="d-flex justify-content-between">
+                            <h5>{{chat.good.title}}</h5>
+                        </div>
+                        <p class="mb-1">
+                            {% if chat.buyer_id == current_user.id %}
+                                <strong>Продавец: </strong>
+                                {{chat.seller.name}}
+                            {% else %}
+                                <strong>Покупатель: </strong>
+                                {{chat.buyer.name}}
+                            {% endif %}
+                        </p>
+                        <small class="text-muted">
+                            {% if chat.buyer_id == current_user.id %}
+                                Город: {{ chat.seller.city }}
+                            {% else %}
+                                Город: {{ chat.buyer.city }}
+                            {% endif %}
+                            Цена: {{ chat.good.price }}
+                        </small>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <small class="text-muted">
+                            Создано: {{ chat.created_date.strftime('%d.%m.%Y %H:%M') }}
+                        </small>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Чатов пока нет
+        </div>
+    {% endif %}
+{% endblock %}

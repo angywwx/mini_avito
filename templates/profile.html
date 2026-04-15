@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Личный кабинет</h1>
+    <a href="/edit_profile" class="btn btn-primary">Редактировать профиль</a>
+  </div>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h4 class="card-title">Информация о пользователи</h4>
+      <p>Имя: {{current_user.name}}</p>
+      <p>Фамилия: {{current_user.surname}}</p>
+      <p>Город: {{current_user.city}}</p>
+      <p>Почта: {{current_user.email}}</p>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Мои объявления</h2>
+    <a href="/goods_create" class="btn btn-primary">Создать объявление</a>
+  </div>
+  {% if goods %}
+    <div class="row">
+      {% for item in goods %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100">
+            {% if item.image_fn %}
+              <img src="{{ url_for('static', filename='img/' + item.image_fn) }}"
+                   class="card-img-top"
+                   alt="Фото товара"
+                   style="width: 100%; height: 400px; object-fit: contain;"
+              >
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ item.title }}</h5>
+              <p class="card-text">
+                <strong>Цена:</strong> {{ item.price }} ₽<br>
+                <strong>Категория:</strong> {{ item.category.category or 'Не указана' }}
+              </p>
+              <p class="card-text">
+                <small class="text-muted">
+                  Создано: {{ item.created_at.strftime('%d.%m.%Y %H:%M') }}
+                </small>
+              </p>
+              <div class="card-footer d-flex gap-2">
+                <a href="/goods_edit/{{ item.id }}" class="btn btn-outline-secondary btn-sm">Редактировать</a>
+                {% if item.is_active%}
+                <a href="/goods_disable/{{ item.id }}" class="btn btn-outline-danger btn-sm">Сделать неактивным</a>
+                {% else %}
+                <a href="/goods_disable/{{ item.id }}" class="btn btn-outline-primary btn-sm">Сделать активным</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

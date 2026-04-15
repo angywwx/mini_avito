@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-3">Чат по объявлению: {{chat.good.title}}</h1>
+<div class="card mb-4">
+    <div class="card-body">
+        <p>Продавец: {{chat.seller.name}} -> Покупатель: {{chat.buyer.name}}</p>
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="d-flex mb-3 {% if msg.user_id == current_user.id %}justify-content-end{% else %}justify-content-start{% endif %}">
+                    <div class="p-3 rounded shadow-sm"
+                        style="
+                            max-width: 70%;
+                            {% if msg.user_id == current_user.id %}
+                                background-color: #d1e7dd;
+                            {% else %}
+                                background-color: #f8f9fa;
+                            {% endif %}
+                        ">
+                        <div class="mb-1">
+                            <strong>
+                            {% if msg.user_id == current_user.id %}
+                                Вы
+                            {% else %}
+                                {{msg.user.name}}
+                            {% endif %}
+                            </strong>
+                        </div>
+                        <div>
+                            {{msg.message}}
+                        </div>
+                        <div class="mt-2 text-muted" style="font-size: 12px;">
+                            {{msg.created_date.strftime('%d.%m.%Y %H:%M')}}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text muted">Сообщений пока нет</p>
+        {% endif %}
+    </div>
+</div>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{form.text.label(class="form-label")}}
+        {{form.text(class="form-control", rows=4)}}
+    </div>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+</form>
+{% endblock %}

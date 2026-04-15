@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{title}}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        {% for field in form if field.name not in ['submit', 'csrf_token'] %}
+            <p>
+              {{ field.label }}<br>
+              {{ field(class="form-control") }}<br>
+              {% for error in field.errors %}
+                  <div class="alert alert-danger" role="alert">
+                      {{ error }}
+                  </div>
+              {% endfor %}
+            </p>
+        {% endfor %}
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        <div>{{ message }}</div>
+    </form>
+{% endblock %}
